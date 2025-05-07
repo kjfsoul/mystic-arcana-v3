@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Connection Check</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #111;
+      color: #eee;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #d4af37;
+      text-align: center;
+    }
+    .card {
+      background-color: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .success {
+      color: #4caf50;
+    }
+    .error {
+      color: #f44336;
+    }
+    .warning {
+      color: #ff9800;
+    }
+    .note {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-top: 10px;
+    }
+    button {
+      background-color: #2d1b53;
+      color: #fff;
+      border: 1px solid #4a3380;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #4a3380;
+    }
+    pre {
+      background-color: #333;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mystic Arcana Supabase Connection Check</h1>
+  
+  <div class="card">
+    <h2>Environment Variables</h2>
+    <p>Checking for Supabase URL and API key in your environment variables...</p>
+    <div id="env-check-result"></div>
+    <div class="note">Note: For security reasons, API keys are partially masked.</div>
+  </div>
+  
+  <div class="card">
+    <h2>Supabase Connection Test</h2>
+    <p>Testing connection to Supabase...</p>
+    <button id="test-connection">Test Connection</button>
+    <div id="connection-result" style="margin-top: 15px;"></div>
+  </div>
+  
+  <div class="card">
+    <h2>Troubleshooting</h2>
+    <ol>
+      <li>Make sure you have a <code>.env</code> or <code>.env.local</code> file with the correct Supabase URL and API keys.</li>
+      <li>Ensure your environment variables are properly named (e.g., <code>VITE_SUPABASE_URL</code> for the frontend).</li>
+      <li>Verify that your Supabase project is active and accessible.</li>
+      <li>Check that your API keys have the necessary permissions.</li>
+      <li>If using Netlify, make sure environment variables are set in the Netlify dashboard.</li>
+    </ol>
+  </div>
+
+  <script type="module">
+    // Check for environment variables
+    const envCheckResult = document.getElementById('env-check-result');
+    
+    // For frontend, we should check for VITE_ prefixed variables
+    const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env?.VITE_SUPABASE_ANON_KEY;
+    
+    function maskString(str) {
+      if (!str) return null;
+      if (str.length <= 8) return '********';
+      return str.substring(0, 4) + '********' + str.substring(str.length - 4);
+    }
+    
+    if (supabaseUrl && supabaseKey) {
+      envCheckResult.innerHTML = `
+        <p class="success">✅ Environment variables found!</p>
+        <pre>VITE_SUPABASE_URL: ${supabaseUrl}
+VITE_SUPABASE_ANON_KEY: ${maskString(supabaseKey)}</pre>
+      `;
+    } else {
+      envCheckResult.innerHTML = `
+        <p class="error">❌ Missing environment variables!</p>
+        <pre>VITE_SUPABASE_URL: ${supabaseUrl ? '✅ Found' : '❌ Missing'}
+VITE_SUPABASE_ANON_KEY: ${supabaseKey ? '✅ Found' : '❌ Missing'}</pre>
+      `;
+    }
+    
+    // Test connection
+    const testConnectionBtn = document.getElementById('test-connection');
+    const connectionResult = document.getElementById('connection-result');
+    
+    testConnectionBtn.addEventListener('click', async () => {
+      connectionResult.innerHTML = '<p>Testing connection...</p>';
+      
+      if (!supabaseUrl || !supabaseKey) {
+        connectionResult.innerHTML = '<p class="error">❌ Cannot test connection: Missing environment variables.</p>';
+        return;
+      }
+      
+      try {
+        // Using fetch to make a simple request to Supabase
+        const response = await fetch(`${supabaseUrl}/rest/v1/?apikey=${supabaseKey}`);
+        
+        if (response.ok) {
+          connectionResult.innerHTML = '<p class="success">✅ Successfully connected to Supabase!</p>';
+        } else {
+          const errorText = await response.text();
+          connectionResult.innerHTML = `
+            <p class="error">❌ Failed to connect to Supabase.</p>
+            <p>Status: ${response.status} ${response.statusText}</p>
+            <pre>${errorText}</pre>
+          `;
+        }
+      } catch (error) {
+        connectionResult.innerHTML = `
+          <p class="error">❌ Error connecting to Supabase:</p>
+          <pre>${error.message}</pre>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>
