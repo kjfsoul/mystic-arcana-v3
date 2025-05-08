@@ -1,20 +1,11 @@
 {
-  "name": "rest-express",
+  "name": "mystic-oracle-v2",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "download:rider-waite": "node scripts/download-rider-waite.js",
-    "create:tarot-placeholders": "node scripts/create-tarot-placeholders.js",
-    "verify:tarot-paths": "node scripts/verify-tarot-paths.js",
-    "fix-deps": "bash scripts/fix-dependencies.sh",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "build:netlify": "vite build && esbuild server/index.tsx --platform=node --bundle --external:* --format=esm --outdir=dist",
-    "start": "NODE_ENV=production node dist/index.js",
-    "check": "tsc",
-    "db:push": "drizzle-kit push",
-    "postinstall": "npm install vite --save-dev"
+    "preview": "vite preview"
   }
 }
