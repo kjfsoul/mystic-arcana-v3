@@ -1,0 +1,50 @@
+[build]
+  command = "npm run build"
+  publish = "dist/public"
+  functions = "netlify/functions"
+  edge_functions = "netlify/edge-functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# API routes for serverless functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Domain redirects
+[[redirects]]
+  from = "https://www.mysticarcana.com/*"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://mysticarcana.netlify.app/*"
+  to = "/"
+  status = 301
+  force = true
+
+# Handle SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  command = "npm run dev"
+  port = 5000
+  targetPort = 5000
+
+# Function bundle settings
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@supabase/supabase-js"]
+
+[dev.functions]
+  directory = "netlify/functions"
+
+[dev.edge_functions]
+  directory = "netlify/edge-functions"
