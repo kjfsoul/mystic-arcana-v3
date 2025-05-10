@@ -10,8 +10,8 @@ server/public
 
 # Environment files
 .env
-.env.*
-!.env.example
+.env.local
+.env.*.local
 
 # IDE and OS files
 .DS_Store
